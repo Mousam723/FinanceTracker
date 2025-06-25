@@ -8,20 +8,36 @@ console.log("✅ Loaded MONGO_URI:", process.env.MONGO_URI);
 
 const express = require('express');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
-dotenv.config();
-
-const corsOptions = {
-    origin: 'http://localhost:3000', // Only allow frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    optionsSuccessStatus: 200 
-};
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
+
+const alloowedOrigins = [
+    'http://localhost:3000',
+    process.env.FRONTEND_URL,
+];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, curl requests, Postman)
+        // or if the origin is in our allowedOrigins list.
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked request from origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Explicitly allow common HTTP methods, including PATCH
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers to be sent by the client
+    credentials: true, // This is essential if you're using cookies or session-based authentication
+    optionsSuccessStatus: 200 // For older browsers (IE11, various SmartTVs)
+};
+
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -39,7 +55,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/expense_tracker')
 
 app.use('/api/auth', authRoutes);
 app.use('/api/expenses', expenseRoutes); // if using expenses
-app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/users', userRoutes);
 
 app.get('/', (req, res) => {
     res.send('Backend is working fine!');
