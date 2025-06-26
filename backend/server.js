@@ -15,7 +15,7 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-const alloowedOrigins = [
+const allowedOrigins = [
     'http://localhost:3000',
     process.env.FRONTEND_URL,
 ];
@@ -49,8 +49,9 @@ app.use((err, req, res, next) => {
 
 
 // MongoDB Connection
-mongoose.connect('mongodb://127.0.0.1:27017/expense_tracker')
-.then(() => console.log('✅ Connected to Local MongoDB'))
+const mongoURI = process.env.MONGO_URI;
+mongoose.connect(mongoURI)
+.then(() => console.log('✅ Connected successfully'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
 app.use('/api/auth', authRoutes);
