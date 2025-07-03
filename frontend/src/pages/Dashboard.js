@@ -39,7 +39,7 @@ const getMonthName = (year, monthIndex) => {
 // Main Dashboard Component
 const Dashboard = () => {
     const { user } = useAuth(); // Destructure logout for potential use
-
+    
     console.log("Dashboard Render: user object from useAuth:", user);
     // console.log("Dashboard Render: user?.token:", user?.token);
 
@@ -152,6 +152,7 @@ const Dashboard = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        console.log(categorySummary);
         // Basic client-side validation
         if (!form.title.trim() || !form.amount || parseFloat(form.amount) <= 0) {
             setError('Please enter a valid title and a positive amount.');
