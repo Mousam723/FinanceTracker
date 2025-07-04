@@ -4,16 +4,17 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 console.log("✅ Loaded JWT_SECRET:", process.env.JWT_SECRET);
-
+const pool = require('./utils/db');
 const express = require('express');
 const cors = require('cors');
 
 // --- Import the MySQL pool from the new db.js file ---
-const pool = require('./utils/db'); // Adjust path if you put db.js elsewhere
+ // Adjust path if you put db.js elsewhere
 
 const authRoutes = require('./routes/authRoutes');
-const expenseRoutes = require('./routes/expenseRoutes');
 const userRoutes = require('./routes/userRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
+
 
 const app = express();
 
@@ -51,8 +52,9 @@ app.use((err, req, res, next) => {
 // Your API routes
 // The middleware and controllers will now import 'pool' from the new db.js
 app.use('/api/auth', authRoutes);
-app.use('/api/expenses', expenseRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/expenses', expenseRoutes);
+
 
 app.get('/', (req, res) => {
     res.send('Backend is working fine!');
