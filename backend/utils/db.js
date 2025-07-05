@@ -10,8 +10,11 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  connectionLimit: 5,
+  queueLimit: 0,
+  idleTimeout: 30000, // Try 30 seconds (30000 ms). Most free tiers are 30-60 sec.
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
 });
 
 // Test the connection when this module is loaded
