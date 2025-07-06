@@ -20,7 +20,7 @@ const Register = () => {
       setSuccessMessage("Registration Successful! Redirecting to login...");
       setTimeout(() => {
         navigate('/'); // Navigate to the login page on successful registration
-      }, 2000);
+      }, 200);
     } catch (err) {
       console.error("Registration error:", err.response ? err.response.data : err); // Log error
       const msg = err.response?.data?.message || "An unknown error occurred during registration.";
