@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { login } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Lock, ArrowRight, TrendingUp } from 'lucide-react';
+import { User, Lock, ArrowRight, TrendingUp, Eye, EyeOff} from 'lucide-react';
 
 const Login = () => {
   const [form, setForm] = useState({ username: '', password: '' });
   const [errorMessage, setErrorMessage] = useState('');
+  const [isClicked, setIsClicked] = useState(false); // New: True if user clicked to lock visibility
+  const [isHovering, setIsHovering] = useState(false);
   const { login: loginUser } = useAuth();
   const navigate = useNavigate();
 
@@ -29,6 +31,22 @@ const Login = () => {
       }, 5000); 
     }
   };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+  };
+
+  // Handler for clicking the eye button
+  const handleClick = () => {
+    setIsClicked(prev => !prev); // Toggle the clicked state
+  };
+
+  // Determine the input type based on clicked state and hover state
+  const inputType = (isClicked || isHovering) ? "text" : "password";
 
   return (
     // <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-400 to-purple-500">
@@ -100,16 +118,26 @@ const Login = () => {
             />
           </div>
 
-          <div className="relative">
+          <div className="relative"> {/* Parent for positioning the eye icon */}
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
-              type="password"
+              type={inputType} // Dynamically set type
               placeholder="Password"
               value={form.password}
               onChange={e => setForm({ ...form, password: e.target.value })}
               required
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-gray-700"
+              className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 text-gray-700"
             />
+            <button
+              type="button"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onClick={handleClick}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none transition-colors duration-200"
+              aria-label={inputType === "text" ? "Hide password" : "Show password"} // Aria-label reflects current state
+            >
+              {inputType === "text" ? <EyeOff size={20} /> : <Eye size={20} />} {/* Icon reflects current state */}
+            </button>
           </div>
 
           <button
