@@ -210,7 +210,7 @@ const Dashboard = () => {
             date: expense.date,
         });
         // Change from expense._id to expense.id
-        setEditingId(expense.id); // <-- CHANGE THIS LINE
+        setEditingId(expense._id); // <-- CHANGE THIS LINE
         setShowAddForm(true);
     }, []);
 
@@ -235,7 +235,7 @@ const Dashboard = () => {
             await deleteExpense(deleteId);
     
             // Change from exp._id to exp.id for filtering the state
-            setExpenses(prev => prev.filter(exp => exp.id !== deleteId)); // <-- CHANGE THIS LINE
+            setExpenses(prev => prev.filter(exp => exp._id !== deleteId)); // <-- CHANGE THIS LINE
         } catch (err) {
             console.error('Error deleting expense:', err);
             setError('Failed to delete expense. Please try again.');
@@ -599,7 +599,7 @@ const Dashboard = () => {
                                                             </button>
                                                             {/* Delete Transaction Button */}
                                                             <button
-                                                                onClick={() => handleDeleteClick(transaction.id, transaction.title)}
+                                                                onClick={() => handleDeleteClick(transaction._id, transaction.title)}
                                                                 className="text-red-600 hover:text-red-900 transition-colors duration-200"
                                                                 title="Delete transaction"
                                                             >

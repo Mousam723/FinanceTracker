@@ -17,17 +17,18 @@ const API = axios.create({
 
 API.interceptors.request.use((req) => {
   // Check for 'profile' in localStorage (as used in your Dashboard screenshots for token)
-  const user = JSON.parse(localStorage.getItem('profile'));
+  const user = JSON.parse(localStorage.getItem('user'));
   // If 'profile' contains a token, use it
   if (user && user.token) {
       req.headers.Authorization = `Bearer ${user.token}`;
-  } else {
-      // Fallback for direct token storage (from your login function's localStorage.setItem('token'))
-      const directToken = localStorage.getItem('token');
-      if (directToken) {
-          req.headers.Authorization = `Bearer ${directToken}`;
-      }
-  }
+  } 
+  // else {
+  //     // Fallback for direct token storage (from your login function's localStorage.setItem('token'))
+  //     const directToken = localStorage.getItem('token');
+  //     if (directToken) {
+  //         req.headers.Authorization = `Bearer ${directToken}`;
+  //     }
+  // }
   return req;
 }, (error) => {
   return Promise.reject(error);
@@ -91,8 +92,8 @@ export const login = async (userData) => {
       // Ensure your backend response actually contains a 'token' field,
       // and that it's correctly stored in localStorage.
       if (response.data && response.data.token) { // Check if response.data exists and has a token
-        localStorage.setItem('profile', JSON.stringify(response.data)); // Store full profile, including token
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data)); // Store full profile, including token
+        // localStorage.setItem('token', response.data.token);
         console.log("Token stored in localStorage:", response.data.token); // For debugging
       }
       return response.data; // Return the user data (including token)
