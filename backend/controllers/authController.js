@@ -1,27 +1,25 @@
-const User = require('../models/User'); // Import the new User model functions
-const bcrypt = require('bcryptjs'); // Needed for password hashing and comparison
-const jwt = require('jsonwebtoken'); // Assuming you use JWT for auth
+// backend/controllers/authController.js
+const User = require('../models/User'); // New: Import the Mongoose User model
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // Register User
 exports.register = async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        // 1. Check if user already exists
-        const existingUser = await User.findUserByUsername(username);
+        // New: Find user by username using Mongoose
+        const existingUser = await User.findOne({ username });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // 2. Hash the password BEFORE saving to MySQL
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // New: Create a new user document
+        const newUser = new User({ username, password });
+        await newUser.save(); // New: Save the user to the database
 
-        // 3. Create the user using the model function
-        const newUserResult = await User.createUser(username, hashedPassword);
-        // You might want to get the actual user ID from newUserResult.insertId
-        const newUserId = newUserResult.insertId;
-
-        res.status(201).json({ message: 'User registered successfully', userId: newUserId });
+        // New: The user ID is now accessible as newUser._id
+        res.status(201).json({ message: 'User registered successfully', userId: newUser._id });
 
     } catch (error) {
         console.error('Error registering user:', error);
@@ -34,20 +32,20 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        // 1. Find user by username
-        const user = await User.findUserByUsername(username);
+        // New: Find user by username using Mongoose
+        const user = await User.findOne({ username });
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        // 2. Compare passwords
+        // The password comparison logic remains the same
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        // 3. Generate JWT token
-        const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        // New: Generate JWT token using the MongoDB user ID
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.json({ token, message: 'Logged in successfully' });
 
